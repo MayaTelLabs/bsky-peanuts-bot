@@ -22,7 +22,7 @@ dotenv.config();
 
 // EDIT THIS!
 function altTextFromFilename(filename: string): string {
-  return 'Peanuts strip from ' + (filename);
+  return 'Peanuts: ' + (filename);
 }
 
 // Shouldn't have to edit this.
@@ -34,7 +34,7 @@ async function main() {
 
   await postImage({
     path: nextImage.absolutePath,
-    text: 'Peanuts: ' + (filename),
+    text: altTextFromFilename(nextImage.imageName),
     altText: altTextFromFilename(nextImage.imageName),
   });
 }
