@@ -34,7 +34,7 @@ async function main() {
 
   await postImage({
     path: nextImage.absolutePath,
-    text: 'Peanuts: (filename)',
+    text: 'Peanuts: ' + (filename),
     altText: altTextFromFilename(nextImage.imageName),
   });
 }
