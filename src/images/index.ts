@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-
 type RandomImage = {
   imageName: string;
   absolutePath: string;
@@ -17,7 +16,6 @@ async function getNextImage(): Promise<RandomImage> {
   }
   const imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/i;
   const validImageFiles = imageFiles.filter((filename) => imageRegex.test(filename));
-
   if (validImageFiles.length === 0) {
     throw new Error('No image files found in the directory.');
   }
