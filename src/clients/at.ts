@@ -1,7 +1,7 @@
 import { BskyAgent, stringifyLex, jsonToLex } from '@atproto/api';
 import * as fs from 'fs';
 import * as util from 'util';
-import sizeOf from 'buffer-image-size'
+import * as sizeOf from 'buffer-image-size'
 const GET_TIMEOUT = 15e3
 const POST_TIMEOUT = 60e3
 const readFile = util.promisify(fs.readFile);
