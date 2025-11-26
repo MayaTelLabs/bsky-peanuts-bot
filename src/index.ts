@@ -8,7 +8,7 @@ function altTextFromFilename(filename: string): string {
   return 'Peanuts: ' + (filename);
 }
 async function main() {
-  const nextImage = await getRandomImage(); 
+  const nextImage = await getNextImage(); 
 
   console.log(nextImage.imageName);
 
