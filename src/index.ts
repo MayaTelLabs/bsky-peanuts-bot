@@ -2,9 +2,13 @@ import { postImage } from './clients/at';
 import { getNextImage } from './images'; 
 import * as dotenv from 'dotenv';
 dotenv.config();
-function formatDateString(dateString: string): string {
-    const dateObj = new Date(dateString + 'T12:00:00'); 
+function getDateFromFilename(filename: string): Date {
+    const filenameNoJPG = filename.replace(/\.JPG$/i, "");
+    return new Date(filenameNoJPG + 'T12:00:00'); 
+}
+function formatFullDate(dateObj: Date): string {
     const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
@@ -12,21 +16,25 @@ function formatDateString(dateString: string): string {
     return new Intl.DateTimeFormat('en-US', options).format(dateObj);
 }
 function altTextFromFilename(filename: string): string {
-    const filenameNoJPG = filename.replace(/\.JPG$/i, "");
-    const formattedDate = formatDateString(filenameNoJPG);
+    const dateObj = getDateFromFilename(filename);
+    const formattedDate = formatFullDate(dateObj);
     return 'The Peanuts comic strip, drawn by Charles M. Schulz, originally released ' + formattedDate;
 }
-function postCaptionFromFilename(filename: string): string {
-  const filenameNoJPG = filename.replace(/\.JPG$/i, "");
-  const formattedDate = formatDateString(filenameNoJPG);
-  return 'Peanuts by Schulz: ' + formattedDate; 
+function postCaption(dateObj: Date): string {
+  const formattedDate = formatFullDate(dateObj);
+  if (dateObj.getDay() === 0) {
+    return 'Sunday Peanuts by Schulz: ' + formattedDate; 
+  } else {
+    return 'Peanuts by Schulz: ' + formattedDate; 
+  }
 }
 async function main() {
   const nextImage = await getNextImage(); 
   console.log(nextImage.imageName);
+  const imageDate = getDateFromFilename(nextImage.imageName); 
   await postImage({
     path: nextImage.absolutePath,
-    text: postCaptionFromFilename(nextImage.imageName),
+    text: postCaption(imageDate),
     altText: altTextFromFilename(nextImage.imageName),
   });
 }
