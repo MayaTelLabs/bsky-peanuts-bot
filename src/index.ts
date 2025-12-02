@@ -2,6 +2,7 @@ import { postImage } from './clients/at';
 import { getNextImage } from './images'; 
 import * as dotenv from 'dotenv';
 dotenv.config();
+const CUTOFF_DATE = new Date('1950-10-01T00:00:00');
 function getDateFromFilename(filename: string): Date {
     const filenameNoJPG = filename.replace(/\.JPG$/i, "");
     return new Date(filenameNoJPG + 'T12:00:00'); 
@@ -15,27 +16,36 @@ function formatFullDate(dateObj: Date): string {
     };
     return new Intl.DateTimeFormat('en-US', options).format(dateObj);
 }
-function altTextFromFilename(filename: string): string {
-    const dateObj = getDateFromFilename(filename);
+function generateAltText(dateObj: Date): string {
     const formattedDate = formatFullDate(dateObj);
-    return 'The Peanuts comic strip, drawn by Charles M. Schulz, originally released ' + formattedDate;
+    if (dateObj < CUTOFF_DATE) {
+        return 'A Li\'l Folks comic strip, drawn by Charles M. Schulz and credited to "Sparky", originally released ' + formattedDate;
+    } else {
+        return 'A Peanuts comic strip, drawn by Charles M. Schulz, originally released ' + formattedDate;
+    }
 }
-function postCaption(dateObj: Date): string {
+function generateCaption(dateObj: Date): string {
   const formattedDate = formatFullDate(dateObj);
-  if (dateObj.getDay() === 0) {
-    return 'Sunday Peanuts by Schulz: ' + formattedDate; 
+  if (dateObj < CUTOFF_DATE) {
+    return 'Li\'l Folks by "Sparky": ' + formattedDate;
   } else {
-    return 'Peanuts by Schulz: ' + formattedDate; 
+    if (dateObj.getDay() === 0) {
+      return 'Sunday Peanuts by Schulz: ' + formattedDate; 
+    } else {
+      return 'Peanuts by Schulz: ' + formattedDate; 
+    }
   }
 }
 async function main() {
   const nextImage = await getNextImage(); 
   console.log(nextImage.imageName);
   const imageDate = getDateFromFilename(nextImage.imageName); 
+  const postText = generateCaption(imageDate);
+  const postAltText = generateAltText(imageDate);
   await postImage({
     path: nextImage.absolutePath,
-    text: postCaption(imageDate),
-    altText: altTextFromFilename(nextImage.imageName),
+    text: postText,
+    altText: postAltText,
   });
 }
 main();
